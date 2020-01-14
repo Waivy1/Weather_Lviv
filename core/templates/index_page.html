@@ -1,0 +1,144 @@
+<head>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+  <link rel="stylesheet" href="https://bootswatch.com/4/lux/bootstrap.css">
+    <meta charset="UTF-8">
+</head>
+
+ <body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <a class="navbar-brand" id='xxx' href="/"> 
+     <p>Дратуті</p> 
+  </a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor02" aria-controls="navbarColor02" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarColor02">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item active">
+        <a class="nav-link" href="/">Home <span class="sr-only"></span></a>
+      </li>
+   </ul>
+ </nav>
+      
+<div class="row">
+	<button id="bulbOn" > On</button>
+	<button id="bulbOff"> Off</button>
+	<button id="setColor"> Apply color</button>
+  <input id="colorPick" type="color" name="favcolor" value="#ff0000">
+</div>
+
+<div class="row">
+	<div class="col-sm-4"></div>
+	<div class="col-sm-4"><button id="weather">Weather</button></div>
+	<div class="col-sm-4" id='weatherResult'></div>
+</div>
+
+<div class="row">
+	<div class="col-sm-4"></div>
+	<div class="col-sm-4"><button id="sky">Sky</button></div>
+	<div class="col-sm-4" id='skyResult'></div>
+</div>
+
+<div class="row">
+	<div class="col-sm-4"></div>
+	<div class="col-sm-4"><button id="name">City</button></div>
+	<div class="col-sm-4" id='nameResult'></div>
+</div>
+
+
+<script type="text/javascript">
+
+	to_rgb = function(value){
+		 value = value.match(/[A-Za-z0-9]{2}/g);
+
+		// ["XX", "XX", "XX"] -> [n, n, n]
+		value = value.map(function(v) { return parseInt(v, 16) });
+
+		// [n, n, n] -> rgb(n,n,n)
+		return value.join("/");
+	};
+
+ $(document).ready(
+ 	function() {
+
+;
+
+});
+
+ $(document).on('click', '#bulbOff', function(){ 
+ 		$.ajax({
+		  url: "/bulb/off",
+			success: function(result){ // success = lambda arg: pass
+				$('#bulbOn').attr("hidden", false);
+				$("#bulbOff").attr("hidden", true);
+			},
+		});
+	});
+
+
+  $(document).on('click', '#bulbOn', function(){ 
+ 		$.ajax({
+		  url: "/bulb/on",
+		   // success({'message': 'success'})
+		  // def success(arg):
+		  //    pass
+			success: function(result){ // success = lambda arg: pass
+				$('#bulbOff').attr("hidden", false);
+				$("#bulbOn").attr("hidden", true);
+			},
+		});
+	});
+
+// на(яка_подія, який_елемент, функцію_виконати)
+  $(document).on('click', '#setColor', function(){ 
+  	color = $("#colorPick")[0].value;
+  	rgb = to_rgb(color)
+
+  	$.ajax({
+  		method: "GET",
+		  url: "/color/" + rgb,
+		  success: function(text){
+		  	console.log(text['message']);
+		  }	
+		});
+	});
+
+	$(document).on('click', '#weather', function(){ 
+ 		$.ajax({
+		  url: "/weather",
+		  success: function(json){
+		  	console.log(json);
+
+		  	var temp_html = json['temp'] + " ℃"
+		  	$('#weatherResult').html(temp_html)
+		  }	
+		});
+	});
+
+	$(document).on('click', '#sky', function(){ 
+ 		$.ajax({
+		  url: "/weather",
+		  success: function(json){
+
+		  	var sky_html = json['sky_is'] 
+		  	$('#skyResult').html(sky_html)
+		  }	
+		});
+	});
+
+	$(document).on('click', '#name', function(){
+		$.ajax({
+			url: '/weather', 
+			success: function(json){
+				$('#nameResult').html(json['name'])
+			}
+		});
+	});
+
+
+</script>
